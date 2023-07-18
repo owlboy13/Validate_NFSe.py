@@ -5,6 +5,8 @@ Resumo: com as notas fiscais em pdf inderidas em uma pasta e uma planilha com os
 o código converte essas notas em xml e atraves desa conversão de cada dado buscado compara com o que está na planilha e indentifica se existe alguma divergência,
 havendo essa diferença entre o que está na planilha e o que está na nota o código cria um arquivo em excel com o nome do prestador de serviço e demonstra na planilha qual o erro da nota.
 
+existe um modelo da planilha no repositório para ser alimentada
+
 dentro da pasta onde fica o código é preciso criar três pastas, resultados, xml, notas fiscais
 
 resultados: onde será gerado a planilha comas divergencias
