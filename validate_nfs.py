@@ -2,8 +2,9 @@ import pandas as pd
 from pdfquery import PDFQuery
 import os
 import re
+from tqdm.auto import tqdm
 
-caminho_planilha_excel = 'notas_fiscais.xlsx'
+caminho_planilha_excel = input('Insira o nome do arquivo em excel:  ') #'jafhelog.xlsx'
 caminho_diretorio_pdfs = './Notas'
 resultados_diretorio = './resultados'
 xml_diretorio = './xml'
@@ -11,33 +12,23 @@ xml_diretorio = './xml'
 planilha_excel = pd.read_excel(caminho_planilha_excel)
 
 excel_colunas_mapa_codigo = {
-  # 'razao_social_emitente': {
-  #   'precisa_extrair_codigo': False,
-  #   'xml_codigo': [
-  #     '14.173, 686.71, 204.405, 694.71',
-  #     '14.173, 690.07, 204.405, 700.15',
-  #     '14.173, 690.07, 180.149, 700.15',
-  #     '14.173, 690.07, 238.06, 700.15',
-  #     '14.173, 690.07, 219.593, 700.15',
-  #     '14.173, 690.07, 198.595, 700.15',
-  #     '14.173, 690.07, 266.961, 700.15',
-  #     '14.173, 690.07, 278.068, 700.15'
-  #   ],
-  # },
   'cnpj_emitente': {
     'precisa_extrair_codigo': False,
     'xml_codigo': [
-      '155.906, 701.749, 227.524, 709.749',
       '155.906, 709.072, 227.524, 717.072',
-      '155.906, 712.431, 227.524, 722.511',
+      '155.906, 701.749, 227.524, 709.749',
+      '155.906, 709.282, 227.524, 717.282',
     ],
   },
   'razao_social_tomador': {
     'precisa_extrair_codigo': False,
     'xml_codigo': [
+      '14.173, 593.969, 193.797, 601.969',
+      '14.173, 601.292, 193.797, 609.292',
       '14.173, 593.969, 177.89, 601.969',
       '14.173, 601.292, 177.89, 609.292',
       '14.173, 604.652, 177.89, 614.732',
+      '14.173, 601.502, 177.89, 609.502',
     ],
   },
   'cnpj_tomador': {
@@ -46,6 +37,7 @@ excel_colunas_mapa_codigo = {
       '155.906, 615.199, 227.524, 623.199',
       '155.906, 622.522, 227.524, 630.522',
       '155.906, 625.882, 227.524, 635.962',
+      '155.906, 622.732, 227.524, 630.732',
     ],
   },
   'codigo': {
@@ -54,32 +46,45 @@ excel_colunas_mapa_codigo = {
       '14.173, 525.705, 119.699, 533.705',
       '14.173, 533.027, 119.699, 541.027',
       '14.173, 536.387, 119.699, 546.467',
+      '14.173, 533.237, 119.699, 541.237',
     ],
   },
   'descricao': {
     'precisa_extrair_codigo': False,
     'xml_codigo': [
+      '14.173, 493.689, 395.594, 501.689',
+      '14.173, 493.689, 387.598, 501.689',
+      '14.173, 493.689, 385.379, 501.689',
+      '14.173, 593.969, 193.797, 601.969',
+      '14.173, 493.689, 354.445, 501.689',
+      '14.173, 493.689, 350.055, 501.689',
       '14.173, 486.366, 330.437, 494.366',
       '14.173, 493.689, 330.437, 501.689',
       '14.173, 493.689, 326.027, 501.689',
       '14.173, 497.049, 326.027, 507.129',
+      '14.173, 493.899, 288.102, 501.899',
+      '14.173, 493.899, 296.998, 501.899',
     ],
   }, 
   'valor': {
     'precisa_extrair_codigo': True,
     'xml_codigo': [
-      '14.173, 408.871, 50.981, 416.871',
+      '14.173, 296.339, 57.645, 304.339',
       '14.173, 416.193, 57.645, 424.193',
       '14.173, 416.193, 50.981, 424.193',
       '14.173, 416.193, 50.981, 424.193',
       '14.173, 416.193, 46.533, 424.193',
       '14.173, 419.553, 50.981, 429.633',
       '14.173, 419.553, 57.645, 429.633',
+      '14.173, 398.084, 50.981, 406.084',
+      '14.173, 416.403, 42.085, 424.403',
+      '14.173, 416.403, 50.981, 424.403',
     ]
   }
 }
 
 def print_message(message):
+  print('================')
   print(message)
   print('================')
 
@@ -87,29 +92,30 @@ def extrair_codigo(text):
   return ''.join(re.findall('(\d+|\.\d+|,)', text))
 
 def extrair_pdf_conteudo(pdf, nome_do_arquivo):
-  conteudo = {}
-  for chave, valor in excel_colunas_mapa_codigo.items():
-    texto = ''
-    for codigo in valor.get('xml_codigo', []):
-      texto = pdf.pq(f'LTTextLineHorizontal:in_bbox("{codigo}")').text().strip()
-      if texto:
-        break
-    
-    if not texto:
-      print_message(
-        f'Nao achou valor para o campo `{chave}`, '
-        'provavelmente precisa de novo codigo, '
-        f'olhar o codigo em {xml_diretorio}/{nome_do_arquivo}.xml')
-    
-    if valor.get('precisa_extrair_codigo'):
-      texto = extrair_codigo(texto)
+    conteudo = {}
+    for chave, valor in excel_colunas_mapa_codigo.items():
+        texto = ''
+        for codigo in valor.get('xml_codigo', []):
+            texto = pdf.pq(f'LTTextLineHorizontal:in_bbox("{codigo}")').text().strip()
+            if texto:
+                break
+        
+        if not texto:
+            print_message(
+                f'Nao achou valor para o campo `{chave}`, '
+                'provavelmente precisa de novo codigo, '
+                f'olhar o codigo em {xml_diretorio}/{nome_do_arquivo}.xml')
+        
+        if valor.get('precisa_extrair_codigo'):
+            texto = extrair_codigo(texto)
 
-    conteudo[chave] = texto
-  
-  return conteudo
+        conteudo[chave] = texto
+    
+    return conteudo
+
 
 # Percorrer os arquivos PDFs no diretório
-for pdf_nome in os.listdir(caminho_diretorio_pdfs):
+for pdf_nome in tqdm(os.listdir(caminho_diretorio_pdfs)):
 
   if pdf_nome.endswith('.pdf'):
     caminho_pdf = os.path.join(caminho_diretorio_pdfs, pdf_nome)
@@ -133,6 +139,8 @@ for pdf_nome in os.listdir(caminho_diretorio_pdfs):
     pdf_existe_no_excel = None
     campos_diferente_pdf = []
     for _, linha in planilha_excel.iterrows():
+      # print(f"CNPJ na planilha Excel: {linha['CNPJ_Emitente']}")
+      # print(f"CNPJ extraído do PDF: {conteudo['cnpj_emitente']}")
       if linha['CNPJ_Emitente'] == conteudo['cnpj_emitente']:
         linha['Codigo'] = f"{extrair_codigo(linha['Codigo'])},"
         linha['Descricao'] = linha['Descricao'].strip()
@@ -193,10 +201,8 @@ for pdf_nome in os.listdir(caminho_diretorio_pdfs):
     # grava os campos diferentes, se houve,
     # num arquivo csv
     if not resultados.empty:
+      print_message('Verifique as diferenças: ')
       print_message(f'Salvando arquivo {nome_do_arquivo} - {campos_diferente=}')
       resultados.to_csv(f'{resultados_diretorio}/{nome_do_arquivo}.csv')
       
-     
-        
-
-   
+print_message('Validação Finalizada')
