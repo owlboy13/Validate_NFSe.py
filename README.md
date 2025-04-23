@@ -1,8 +1,8 @@
 # Validate_NFSe.py
 Validação de Notas Fiscais do Sistema Nacional (NFS-e) com base no prestador, tomador, descrição, valor e código de tributação da nota fiscal.
 
-Resumo: com as notas fiscais em pdf inderidas em uma pasta e uma planilha com os dados de validação, 
-o código converte essas notas em xml e atraves desa conversão de cada dado buscado compara com o que está na planilha e indentifica se existe alguma divergência,
+Resumo: com as notas fiscais em pdf inseridas em uma pasta e uma planilha com os dados de validação
+o código converte essas notas em xml e atraves dessa conversão de cada dado buscado compara com o que está na planilha e indentifica se existe alguma divergência,
 havendo essa diferença entre o que está na planilha e o que está na nota o código cria um arquivo em excel com o nome do prestador de serviço e demonstra na planilha qual o erro da nota.
 
 existe um modelo da planilha no repositório para ser alimentada
