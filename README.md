@@ -1,36 +1,99 @@
-# Validate_NFSe.py
-Validação de Notas Fiscais do Sistema Nacional (NFS-e) com base no prestador, tomador, descrição, valor e código de tributação da nota fiscal.
+📑 Validador de Notas Fiscais de Serviço (NFS-e) com PDFQuery
+🔍 Sistema avançado de validação de NFS-e que utiliza PDFQuery para extração precisa de dados, comparando com planilha de referência e identificando divergências.
 
-Resumo: com as notas fiscais em pdf inseridas em uma pasta e uma planilha com os dados de validação
-o código converte essas notas em xml e atraves dessa conversão de cada dado buscado compara com o que está na planilha e indentifica se existe alguma divergência,
-havendo essa diferença entre o que está na planilha e o que está na nota o código cria um arquivo em excel com o nome do prestador de serviço e demonstra na planilha qual o erro da nota.
+📌 Visão Geral
+Este script Python automatiza a validação de NFS-e utilizando tecnologia moderna de extração de dados:
+✅ Extrai dados de NFS-e em PDF usando PDFQuery (mais preciso que PyPDF2)
+✅ Compara com planilha de referência (Excel/CSV)
+✅ Gera relatórios detalhados de divergências por prestador
 
-existe um modelo da planilha no repositório para ser alimentada
+Ideal para departamentos fiscais, contadores e empresas que necessitam validar grandes volumes de notas fiscais com precisão.
 
-dentro da pasta onde fica o código é preciso criar três pastas, resultados, xml, notas fiscais
+⚙️ Funcionalidades
+1. Extração Avançada de Dados
+Utiliza PDFQuery para extração precisa de dados de NFS-e em PDF
 
-resultados: onde será gerado a planilha comas divergencias
-xml: onde será enviado os xmls convertidos
-notas fiscais: onde será inserido as notas fiscais em pdf para validação
+Captura:
+
+Prestador de serviço (nome/CNPJ)
+
+Tomador de serviço (nome/CNPJ)
+
+Código de tributação
+
+Descrição do serviço
+
+Valor da nota
+
+2. Validação Automatizada
+Compara dados extraídos com planilha de referência
+
+Identifica divergências com precisão
+
+Classifica erros por criticidade
+
+3. Geração de Relatórios
+Cria planilhas individuais por prestador
+
+Detalha cada divergência encontrada
+
+Formato limpo e profissional em Excel
+
+🛠️ Tecnologias Utilizadas
+Python 3.10+
+
+PDFQuery (extração precisa de dados de PDF)
+
+Pandas (manipulação de dados e comparação)
+
+OpenPyXL (geração de relatórios em Excel)
 
 
-Exemplo:
+📥 Configuração e Uso
+Pré-requisitos
+bash
+pip install pdfquery pandas openpyxl
+Estrutura de Pastas
+text
+/notas_fiscais    # Armazena os PDFs das NFS-e
+/xml              # Armazena XMLs intermediários (opcional)
+/resultados       # Relatórios de divergências
+modelo.xlsx       # Planilha de referência
+Como Usar
+Preencha modelo.xlsx com os dados corretos
 
-o que está na planilha, correto:
-prestador de serviço: José Paulo Duarte 
-tomador de serviço: doces ltda
-código: 26655
-descrição da prestação de serviço: venda de doces
-valor R$ 1.000,00
+Coloque as NFS-e em PDF na pasta /notas_fiscais
 
-o que está na nota fiscal:
+Execute:
 
-prestador de serviço: José Paulo Duarte 
-tomador de serviço: doces ltda
-código: 26655
-descrição da prestação de serviço: venda de doces
-valor R$ 1.200,00
+bash
+python Validate_NFSe.py
+Consulte os resultados em /resultados
 
-o valor está errado na nota fiscal, dessa forma o código cria uma planilha de excel apenas do José Paulo Duarte, informando qual dado está incorreto, nesse caso é o valor.
+📂 Exemplo de Saída
+Relatório: Prestador_X.xlsx
 
+Campo	Valor Esperado	Valor NFS-e	Status
+Valor	R$ 1.000,00	R$ 1.200,00	❌ Erro
+Código	26655	26655	✔ OK
+🆚 Por que PDFQuery?
+Maior precisão na extração de dados de PDF
+
+Melhor tratamento de PDFs complexos
+
+Extrai dados específicos por coordenadas ou tags
+
+Mais confiável que PyPDF2 para NFS-e
+
+🚀 Roadmap
+Adicionar suporte a lote de notas
+
+Implementar validação de CNPJ
+
+Criar dashboard de resultados
+
+Adicionar notificações por e-mail
+
+📄 Licença
+MIT License
 
